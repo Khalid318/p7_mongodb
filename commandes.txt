@@ -1,0 +1,6 @@
+docker exec -it p7_mongo mongoimport \
+  --db nocites \
+  --collection listings_paris \
+  --type csv \
+  --headerline \
+  --file /data/import/listings_Paris.csv
