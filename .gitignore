@@ -1,2 +1,4 @@
 mongodb_data/
 data/*.csv
+data/
+commandes.txt
