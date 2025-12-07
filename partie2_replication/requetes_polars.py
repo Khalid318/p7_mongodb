@@ -2,9 +2,10 @@ from pymongo import MongoClient
 import polars as pl
 
 # Connexion 
-client = MongoClient("mongodb://localhost:27017")
+client = MongoClient("mongodb://localhost:27017/?directConnection=true")
+
 db = client["noscites"]
-collection = db["listings_paris"]
+collection = db["listings"]
 
 # charger seulement les champs utiles
 champs = {

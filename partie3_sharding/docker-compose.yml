@@ -1,0 +1,116 @@
+services:
+
+  # CONFIG SERVER (1 node - simplifié)
+
+  configsvr:
+    image: mongo:7.0
+    container_name: configsvr
+    command: mongod --configsvr --replSet configRS --bind_ip_all --port 27017
+    ports:
+      - "27019:27017"
+    volumes:
+      - configsvr_data:/data/db
+    networks:
+      - mongo-sharding
+
+
+  # SHARD 1 - PARIS (ReplicaSet 3 nodes)
+  
+  shard1_node1:
+    image: mongo:7.0
+    container_name: shard1_node1
+    command: mongod --shardsvr --replSet shard1RS --bind_ip_all --port 27017
+    ports:
+      - "27017:27017"
+    volumes:
+      - shard1_node1_data:/data/db
+    networks:
+      - mongo-sharding
+
+  shard1_node2:
+    image: mongo:7.0
+    container_name: shard1_node2
+    command: mongod --shardsvr --replSet shard1RS --bind_ip_all --port 27017
+    ports:
+      - "27018:27017"
+    volumes:
+      - shard1_node2_data:/data/db
+    networks:
+      - mongo-sharding
+
+  shard1_node3:
+    image: mongo:7.0
+    container_name: shard1_node3
+    command: mongod --shardsvr --replSet shard1RS --bind_ip_all --port 27017
+    ports:
+      - "27020:27017"
+    volumes:
+      - shard1_node3_data:/data/db
+    networks:
+      - mongo-sharding
+
+  # SHARD 2 - LYON (ReplicaSet 3 nodes)
+
+  shard2_node1:
+    image: mongo:7.0
+    container_name: shard2_node1
+    command: mongod --shardsvr --replSet shard2RS --bind_ip_all --port 27017
+    ports:
+      - "27021:27017"
+    volumes:
+      - shard2_node1_data:/data/db
+    networks:
+      - mongo-sharding
+
+  shard2_node2:
+    image: mongo:7.0
+    container_name: shard2_node2
+    command: mongod --shardsvr --replSet shard2RS --bind_ip_all --port 27017
+    ports:
+      - "27022:27017"
+    volumes:
+      - shard2_node2_data:/data/db
+    networks:
+      - mongo-sharding
+
+  shard2_node3:
+    image: mongo:7.0
+    container_name: shard2_node3
+    command: mongod --shardsvr --replSet shard2RS --bind_ip_all --port 27017
+    ports:
+      - "27023:27017"
+    volumes:
+      - shard2_node3_data:/data/db
+    networks:
+      - mongo-sharding
+
+
+  # MONGOS (Routeur)
+
+  mongos:
+    image: mongo:7.0
+    container_name: mongos
+    command: mongos --configdb configRS/configsvr:27017 --bind_ip_all --port 27017
+    ports:
+      - "27024:27017"
+    volumes:
+      - ./data:/data/import
+    depends_on:
+      - configsvr
+      - shard1_node1
+      - shard2_node1
+    networks:
+      - mongo-sharding
+
+networks:
+  mongo-sharding:
+    driver: bridge
+
+volumes:
+  configsvr_data:
+  shard1_node1_data:
+  shard1_node2_data:
+  shard1_node3_data:
+  shard2_node1_data:
+  shard2_node2_data:
+  shard2_node3_data:
